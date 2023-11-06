@@ -11,3 +11,5 @@ if [ -e "/opt/airflow/requirements.txt" ]; then
     $(command -v pip) install --user -r /opt/airflow/requirements.txt
     # Install Python packages listed in requirements.txt for the user
 fi
+
+exec airflow standalone
