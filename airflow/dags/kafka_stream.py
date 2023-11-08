@@ -1,12 +1,18 @@
+import uuid
+from datetime import datetime
 import requests
 import json
 import time
 import logging
 from kafka import KafkaProducer
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+
 
 default_args = {
     'owner': 'admin',
-    'start_date': time.time()
+    'start_date': datetime(2023, 8, 11),
+    'retries': 0
 }
 
 def get_data():
@@ -17,6 +23,7 @@ def get_data():
 
 def format_data(res):
     data = {}
+    data['id'] = str(uuid.uuid4())
     data['first_name'] = res['name']['first']
     data['last_name'] = res['name']['last']
     data['gender'] = res['gender']
@@ -33,7 +40,7 @@ def format_data(res):
 
 def stream_data():
 
-    producer = KafkaProducer(bootstrap_servers=['localhost:29092'], max_block_ms=5000)
+    producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms=5000)
     curr_time = time.time()
 
     while True:
@@ -41,7 +48,7 @@ def stream_data():
             break
         try:
             res = get_data()
-            res = format(res)
+            res = format_data(res)
             
             producer.send('user_created', json.dumps(res).encode('utf-8'))
 
@@ -53,10 +60,9 @@ with DAG('user_automation',
         default_args=default_args,
         schedule_interval='@daily',
         catchup=False) as dag:
-    
+  
     streaming_task = PythonOperator(
         task_id='stream_data_from_api',
-        python_callable=stream_data
+        python_callable=stream_data,
+        dag=dag
     )
-
-streaming_task
