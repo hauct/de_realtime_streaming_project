@@ -26,6 +26,7 @@ def create_table(session):
         post_code TEXT,
         email TEXT,
         username TEXT,
+        dob TEXT,
         registered_date TEXT,
         phone TEXT,
         picture TEXT);
@@ -71,10 +72,10 @@ def create_spark_connection():
             .builder \
             .appName("SparkDataStreaming") \
             .config("spark.streaming.stopGracefullyOnShutdown", True) \
-            .config('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0') \
-            .config('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector-assembly_2.12:3.3.0') \
+            .config('spark.jars.packages', "org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0,"
+                                        "com.datastax.spark:spark-cassandra-connector-assembly_2.12:3.3.0") \
             .config("spark.sql.shuffle.partitions", 4) \
-            .config('spark.cassandra.connection.host', 'localhost') \
+            .config('spark.cassandra.connection.host', 'host.docker.internal') \
             .getOrCreate()
                 
         s_conn.sparkContext.setLogLevel("ERROR")
@@ -89,8 +90,8 @@ def connect_to_kafka(spark_conn):
     try:
         spark_df = spark_conn.readStream \
             .format('kafka') \
-            .option('kafka.bootstrap.servers', 'localhost:9092') \
-            .option('subscribe', 'users_created') \
+            .option('kafka.bootstrap.servers', 'kafka:9092') \
+            .option('subscribe', 'user_created') \
             .option('startingOffsets', 'earliest') \
             .load()
         logging.info("kafka dataframe created successfully")
@@ -103,7 +104,7 @@ def connect_to_kafka(spark_conn):
 def create_cassandra_connection():
     try:
         # connecting to the cassandra cluster
-        cluster = Cluster(['localhost'])
+        cluster = Cluster(['host.docker.internal'])
 
         cas_session = cluster.connect()
 
@@ -115,7 +116,7 @@ def create_cassandra_connection():
 
 def create_selection_df_from_kafka(spark_df):
     schema = StructType([
-        StructField("id", StringType(), False),
+        StructField("id", StringType(), True),
         StructField("first_name", StringType(), False),
         StructField("last_name", StringType(), False),
         StructField("gender", StringType(), False),
@@ -123,6 +124,7 @@ def create_selection_df_from_kafka(spark_df):
         StructField("post_code", StringType(), False),
         StructField("email", StringType(), False),
         StructField("username", StringType(), False),
+        StructField("dob", StringType(), False),
         StructField("registered_date", StringType(), False),
         StructField("phone", StringType(), False),
         StructField("picture", StringType(), False)
@@ -148,7 +150,8 @@ if __name__ == "__main__":
         if session is not None:
             create_keyspace(session)
             create_table(session)
-
+            insert_data(session)
+            
             logging.info("Streaming is being started...")
 
             streaming_query = (selection_df.writeStream.format("org.apache.spark.sql.cassandra")

@@ -40,7 +40,7 @@ def format_data(res):
 
 def stream_data():
 
-    producer = KafkaProducer(bootstrap_servers=['broker:29092'], max_block_ms=5000)
+    producer = KafkaProducer(bootstrap_servers=['kafka:29092'], max_block_ms=5000)
     curr_time = time.time()
 
     while True:
