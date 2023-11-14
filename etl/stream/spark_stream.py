@@ -150,7 +150,7 @@ if __name__ == "__main__":
         if session is not None:
             create_keyspace(session)
             create_table(session)
-            insert_data(session)
+            # insert_data(session)
             
             logging.info("Streaming is being started...")
 

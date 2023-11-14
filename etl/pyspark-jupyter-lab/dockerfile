@@ -50,6 +50,10 @@ RUN mv $SPARK_HOME/conf/spark-env.sh.template $SPARK_HOME/conf/spark-env.sh
 
 # Install Jupyter Lab, PySpark, Kafka, boto & Delta Lake
 RUN pip install jupyterlab
+RUN pip install pandas
+RUN pip install uuid
+RUN pip install time_uuid
+RUN pip install datetime
 RUN pip install pyspark==3.3.0
 RUN pip install kafka-python==2.0.2
 RUN pip install delta-spark==2.2.0

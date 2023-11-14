@@ -23,7 +23,7 @@ def get_data():
 
 def format_data(res):
     data = {}
-    data['id'] = str(uuid.uuid4())
+    data['id'] = str(uuid.uuid1())
     data['first_name'] = res['name']['first']
     data['last_name'] = res['name']['last']
     data['gender'] = res['gender']
