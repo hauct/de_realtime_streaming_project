@@ -98,7 +98,6 @@ services:
     volumes:
       - ./airflow:/opt/airflow
       - ./airflow/dags/kafka_stream.py:/opt/airflow/dags/kafka_stream.py
-      - ./airflow/dags/dag_test.py:/opt/airflow/dags/dag_test.py
       - ./airflow/script:/opt/airflow/script
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/requirements.txt:/opt/airflow/requirements.txt
