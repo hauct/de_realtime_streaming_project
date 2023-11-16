@@ -13,7 +13,7 @@ Welcome to our comprehensive guide on building a complete end-to-end data engine
 
 ## Architecture Overview
 
-![System Architecture](system_architecture.png)
+![System Architecture](./img/system_architecture.png)
 
 The project is structured with the following components:
 
@@ -62,8 +62,33 @@ The project is structured with the following components:
 
 ## Detailed Walkthrough:
 
-1. In your Docker Desktop, open port `8080:8080` to open Airflow-CLI
+1. In your Docker Desktop, open port `8080` to open Airflow-CLI
 
 **Important note**: If you're using Windows, you need to change from "CRLF" to "LF" on the file "entry.sh", to run it on dockerized environment
 
-2. Navigate to the file ``
+![](./img/sleek-airflow.png)
+
+
+2. Navigate to the file `./airflow/standalone_admin_password.txt`, parse the password on Airflow-CLI to login. And run the dag `user_automation`
+
+![](./img/run-dag.png)
+
+
+3. In your Docker Desktop, open port `8888` to access to Jupyterlab. After that, click on the jupyterlab container to get the token
+
+![](./img/jupyterlab.png)
+![](./img/jupyterlab-token.png)
+
+
+4. In Jupyterlab-CLI, open the terminal, change to directory `stream` and run the file `spark_stream.py`
+
+```bash
+cd stream
+python spark_stream.py
+```
+
+![](./img/spark-stream.png)
+
+You can also recheck the result on the file `spark_stream_test.ipynb`
+
+![](./img/spark-stream-test.png)
